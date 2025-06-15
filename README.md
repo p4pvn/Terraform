@@ -20,19 +20,6 @@ The structure of the directory is explained in point number 3.
 - But that goes against DevOps principle (DRY - Don't repeat yourself) and let's be honest, managing 8 different repos is no easy task and defeats the purpose of why we have env in the first place.
 - hence, here we have made a single repository for all infrastructure code stored at "terraform/terraform-stacks" and changed logic according to clusters in "terraform/terraform-deployments" and added appropriate resource values (cloud bills are no joke) according to environments in "terraform/terraform-environment" and will automate apply using pipeline logic stored in "terraform/pipeline"
 
-Terraform Repository:
-│
-├── Terraform-Stacks
-│   └──resources with IaaC Terraform
-│
-├── Terraform-Deployment
-│   └──Cluster wise logic/inputs
-│
-├── Terraform-environment
-│   └── Env-specific Variables (resource size, scaling, region, etc.)
-│       ├── develop
-│       ├── QA
-│       ├── nonprod
-│       └── prod
-└── pipeline/
-        └── CI/CD Logic for Terraform Plan/Apply
+
+![image](https://github.com/user-attachments/assets/669d3f78-1ec6-4c31-b50f-fb66cb17da3a)
+
