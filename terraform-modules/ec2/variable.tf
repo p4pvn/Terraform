@@ -29,7 +29,7 @@ variable "key_name" {
 variable "associate_public_ip_address" {
   description = "Whether to associate a public IP address with the instance."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "enable_monitoring" {
@@ -41,31 +41,31 @@ variable "enable_monitoring" {
 variable "user_data" {
   description = "The user data to supply when launching the instance. This can be a shell script or cloud-init directives."
   type        = string
-  default     = null
+  # default     = null  #will add env wise
 }
 
 variable "iam_instance_profile_arn" {
   description = "The ARN of the IAM instance profile to associate with the instance."
   type        = string
-  default     = null
+  # default     = null #will be added later according to env
 }
 
+#env wise
 variable "ami_id" {
   description = "The ID of the AMI to use for the instance. If null, the latest Amazon Linux 2 AMI will be used."
   type        = string
-  default     = null
 }
 
 variable "root_block_device_volume_size" {
   description = "The size of the root block device in GiB."
   type        = number
-  default     = 8 # Default for Amazon Linux 2
+  default     = 8 # Default for Amazon Linux 2 ; will overwrite later
 }
 
 variable "root_block_device_volume_type" {
   description = "The type of the root block device (e.g., 'gp2', 'gp3', 'io1', 'standard')."
   type        = string
-  default     = "gp2"
+  default     = "gp2" #can use gp3 for higher environment
 }
 
 variable "root_block_device_encrypted" {
@@ -83,7 +83,7 @@ variable "root_block_device_kms_key_id" {
 variable "log_retention_in_days" {
   description = "The number of days to retain CloudWatch Logs for the instance."
   type        = number
-  default     = 30
+  default     = 21         #higher for upper environment
 }
 
 variable "tags" {
