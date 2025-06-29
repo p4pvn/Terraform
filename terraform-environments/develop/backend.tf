@@ -22,3 +22,5 @@ terraform {
     dynamodb_table = "terraform-lock-table" # Replace with your DynamoDB table name
   }
 }
+
+#will add s3 state native lock : https://developer.hashicorp.com/terraform/language/backend/s3
