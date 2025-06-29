@@ -9,7 +9,8 @@ The structure of the directory is explained in point number 3.
 2. RoadMap:
 - create directory structure for complete terraform project. DONE
 - write terraform code to implement resources in develop environments. WIP
-(EC2 done)
+EC2 -> done
+S3 -> working..
 - Implement S3 native remote backend by replacing DynamoDB. (July 25)
 - add variables accordingly for different environments like prod, and non-prod. pending
 - add pipeline logic for smoother deployments. pending
