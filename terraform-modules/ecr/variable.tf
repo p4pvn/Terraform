@@ -7,3 +7,9 @@ variable "microservices" {
     license = "license-service"
   }
 }
+
+
+variable "countno" {
+  type = number
+  default = 15
+}
