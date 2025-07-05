@@ -28,16 +28,28 @@ resource "aws_ecr_lifecycle_policy" "lifecycle" {
   for_each = var.microservices
 
   repository = aws_ecr_repository.repos[each.key].name
-
   policy = jsonencode({
     rules = [
       {
         rulePriority = 1
-        description  = "Keep last 10 images"
+        description  = "Keep only the last 10 images"
         selection = {
           tagStatus     = "any"
           countType     = "imageCountMoreThan"
-          countNumber   = var.countno
+          countNumber   = 10
+        }
+        action = {
+          type = "expire"
+        }
+      },
+      {
+        rulePriority = 2
+        description  = "Delete images older than 3 months"
+        selection = {
+          tagStatus     = "any"
+          countType     = "sinceImagePushed"
+          countUnit     = "days"
+          countNumber   = 90
         }
         action = {
           type = "expire"
