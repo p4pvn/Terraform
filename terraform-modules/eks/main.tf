@@ -120,6 +120,56 @@ resource "aws_eks_node_group" "eks_node_group" {
   #   effect = "NO_SCHEDULE"
   # }
 
+
+################################################################################
+
+# We need to configure the Kubernetes provider to interact with the EKS cluster.
+# This block pulls the cluster endpoint and authentication data.
+data "aws_eks_cluster" "cluster" {
+  name = var.cluster_name
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = var.cluster_name
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.identity.0.oidc.0.issuer
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
+
+
+################################################################################
+# EKS Add-ons
+################################################################################
+
+# EKS add-ons are Kubernetes components managed by AWS.
+# They are critical for the cluster's functionality.
+# We explicitly define them for better control.
+
+# VPC CNI is the primary network plugin.
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "vpc-cni"
+  resolve_conflicts_on_create = "OVERWRITE"
+}
+
+# CoreDNS provides DNS for services within the cluster.
+resource "aws_eks_addon" "coredns" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "coredns"
+  resolve_conflicts_on_create = "OVERWRITE"
+}
+
+# Kube-proxy maintains network rules on nodes.
+resource "aws_eks_addon" "kube_proxy" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "kube-proxy"
+  resolve_conflicts_on_create = "OVERWRITE"
+}
+
+
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy,
     aws_iam_role_policy_attachment.eks_worker_node_policy,
