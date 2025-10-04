@@ -1,1 +1,33 @@
+image: hashicorp/terraform:1.5.7
+
+stages:
+  - apply
+
+variables:
+  TF_IN_AUTOMATION: "1"
+  TF_WORKING_DIR: "${TF_WORKING_DIR:-.}"
+  TF_PLAN_FILE: "${TF_PLAN_FILE:-tfplan}"
+
+terraform:apply:
+  stage: apply
+  when: manual
+  needs:
+    - job: terraform:plan
+      artifacts: true
+  script:
+    - echo "=> cd $TF_WORKING_DIR"
+    - cd "$TF_WORKING_DIR"
+    - echo "Listing artifacts in workspace (for debug):" || true
+    - ls -la
+    - |
+      if [ ! -f "${TF_PLAN_FILE}" ]; then
+        echo "ERROR: plan file '${TF_PLAN_FILE}' not found in job artifacts. Aborting."
+        exit 1
+      fi
+    - echo "Applying plan ${TF_PLAN_FILE}..."
+    - terraform apply -input=false -auto-approve "${TF_PLAN_FILE}"
+  cache:
+    key: "$CI_PROJECT_ID-tf-cache"
+    paths:
+      - .terraform
 

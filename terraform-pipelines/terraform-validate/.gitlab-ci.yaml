@@ -1,1 +1,27 @@
+image: hashicorp/terraform:1.5.7
+
+stages:
+  - validate
+
+variables:
+  TF_IN_AUTOMATION: "1"
+  TF_WORKING_DIR: "${TF_WORKING_DIR:-.}"
+
+terraform:validate:
+  stage: validate
+  needs:
+    - job: terraform:init
+      optional: true
+      artifacts: true
+  script:
+    - echo "=> cd $TF_WORKING_DIR"
+    - cd "$TF_WORKING_DIR"
+    - echo "Running terraform fmt (check)..."
+    - terraform fmt -check -recursive || (echo "Run 'terraform fmt' to fix formatting"; false)
+    - echo "Running terraform validate..."
+    - terraform validate -no-color
+  cache:
+    key: "$CI_PROJECT_ID-tf-cache"
+    paths:
+      - .terraform
 

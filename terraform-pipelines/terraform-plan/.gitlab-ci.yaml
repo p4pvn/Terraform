@@ -1,1 +1,51 @@
 
+image: hashicorp/terraform:1.5.7
+
+stages:
+  - plan
+
+variables:
+  TF_IN_AUTOMATION: "1"
+  TF_WORKING_DIR: "${TF_WORKING_DIR:-.}"
+  TF_PLAN_FILE: "tfplan"
+
+terraform:plan:
+  stage: plan
+  when: manual
+  needs:
+    - job: terraform:validate
+      artifacts: true
+    - job: terraform:init
+      artifacts: true
+  script:
+    - echo "=> cd $TF_WORKING_DIR"
+    - cd "$TF_WORKING_DIR"
+    - |
+      # Build var-file and inline var args
+      VAR_ARGS=""
+      if [ -n "$TF_VAR_FILES" ]; then
+        IFS=';' read -ra _VFILES <<< "$TF_VAR_FILES"
+        for f in "${_VFILES[@]}"; do VAR_ARGS="$VAR_ARGS -var-file=$f"; done
+      fi
+      if [ -n "$TF_VARS" ]; then
+        IFS=';' read -ra _VARS <<< "$TF_VARS"
+        for v in "${_VARS[@]}"; do VAR_ARGS="$VAR_ARGS -var '$v'"; done
+      fi
+      echo "Var args: $VAR_ARGS"
+    - |
+      echo "Running terraform plan -> ${TF_PLAN_FILE} ..."
+      eval "terraform plan -out=${TF_PLAN_FILE} -input=false $VAR_ARGS ${TF_CLI_ARGS:-}"
+    - echo "Exporting plan json..."
+    - terraform show -json "${TF_PLAN_FILE}" > "${TF_PLAN_FILE}.json"
+  artifacts:
+    name: "tfplan-$CI_COMMIT_SHORT_SHA"
+    expire_in: 1 day
+    paths:
+      - "${TF_PLAN_FILE}"
+      - "${TF_PLAN_FILE}.json"
+    when: always
+  cache:
+    key: "$CI_PROJECT_ID-tf-cache"
+    paths:
+      - .terraform
+

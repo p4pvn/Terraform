@@ -1,1 +1,35 @@
 
+image: hashicorp/terraform:1.5.7
+
+stages:
+  - destroy
+
+variables:
+  TF_IN_AUTOMATION: "1"
+  TF_WORKING_DIR: "${TF_WORKING_DIR:-.}"
+
+terraform:destroy:
+  stage: destroy
+  when: manual
+  allow_failure: false
+  script:
+    - echo "=> cd $TF_WORKING_DIR"
+    - cd "$TF_WORKING_DIR"
+    - |
+      # Build var args
+      VAR_ARGS=""
+      if [ -n "$TF_VAR_FILES" ]; then
+        IFS=';' read -ra _VFILES <<< "$TF_VAR_FILES"
+        for f in "${_VFILES[@]}"; do VAR_ARGS="$VAR_ARGS -var-file=$f"; done
+      fi
+      if [ -n "$TF_VARS" ]; then
+        IFS=';' read -ra _VARS <<< "$TF_VARS"
+        for v in "${_VARS[@]}"; do VAR_ARGS="$VAR_ARGS -var '$v'"; done
+      fi
+    - echo "Running terraform destroy (this will delete infra)..."
+    - eval "terraform destroy -auto-approve $VAR_ARGS ${TF_CLI_ARGS:-}"
+  cache:
+    key: "$CI_PROJECT_ID-tf-cache"
+    paths:
+      - .terraform
+

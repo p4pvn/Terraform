@@ -1,1 +1,22 @@
+include:
+  - local: 'terraform-init/.gitlab-ci.yaml'
+  - local: 'terraform-validate/.gitlab-ci.yaml'
+  - local: 'terraform-plan/.gitlab-ci.yaml'
+  - local: 'terraform-apply/.gitlab-ci.yaml'
+  - local: 'terraform-destroy/.gitlab-ci.yaml'
+
+stages:
+  - checkout
+  - secret-detection
+  - init
+  - validate
+  - plan
+  - apply
+  - destroy
+
+variables:
+  TF_WORKING_DIR: "infrastructure/${environment}"
+  TF_BACKEND_CONFIGS: "bucket=my-remote-state-bucket;key=prod/terraform.tfstate;region=${region}"
+  TF_VAR_FILES: "envs/prod.tfvars"
+  TF_VARS: "project=github-demo;owner=devops-team"
 
