@@ -21,8 +21,6 @@ S3 -> working..
 - Also, like any other global product, we also have 4 environments (develop, QA, nonprod, PROD).
 - now, since we have a total 8 requirements (4x2 = 8) since we have 2 clusters on all 4 environments, it might look like we may need to manage 8 different code repositories.
 - But that goes against DevOps principle (DRY - Don't repeat yourself) and let's be honest, managing 8 different repos is no easy task and defeats the purpose of why we have env in the first place.
-- hence, here we have made a single repository for all infrastructure code stored at "terraform/terraform-stacks" and changed logic according to clusters in "terraform/terraform-deployments" and added appropriate resource values (cloud bills are no joke) according to environments in "terraform/terraform-environment" and will automate apply using pipeline logic stored in "terraform/pipeline"
-
+- hence, here we have made a single repository for all infrastructure code stored at "terraform/terraform-stacks" and changed logic according to clusters in "terraform/terraform-deployments" and added appropriate resource values (cloud bills are no joke) according to environments in "terraform/terraform-environment" and will automate apply using pipeline logic stored in "terraform/pipeline".
 
 ![image](https://github.com/user-attachments/assets/669d3f78-1ec6-4c31-b50f-fb66cb17da3a)
-
