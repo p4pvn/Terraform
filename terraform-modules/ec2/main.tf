@@ -28,7 +28,7 @@ resource "aws_instance" "this" {
   key_name                    = var.key_name
   associate_public_ip_address = var.associate_public_ip_address
   monitoring                  = var.enable_monitoring
-  user_data                   = var.user_data
+  user_data                   = templatefile("${path.module}/user_data.sh.tftpl", {})
   iam_instance_profile        = var.iam_instance_profile_arn #replace this w data block later
 
   root_block_device {
