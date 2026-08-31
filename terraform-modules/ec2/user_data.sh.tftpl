@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euxo pipefail
+
+mkdir -p /opt/scripts
+
+cat >/opt/scripts/hello-world.sh <<'EOF'
+#!/bin/bash
+echo "hello world" >> /var/log/hello-world.log
+EOF
+
+chmod +x /opt/scripts/hello-world.sh
+
+(crontab -l 2>/dev/null; echo "0 * * * * /opt/scripts/hello-world.sh") | crontab -
