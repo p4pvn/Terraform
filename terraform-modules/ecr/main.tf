@@ -23,7 +23,6 @@ resource "aws_ecr_repository" "repos" {
   }
 }
 
-
 resource "aws_ecr_lifecycle_policy" "lifecycle" {
   for_each = var.microservices
 
